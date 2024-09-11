@@ -5,6 +5,8 @@
 #include "eng_format.hpp"
 #include <map>
 #include <functional>
+
+//Numerical code for keys assinged to const char 
 const char UP_ARROW = 72;
 const char DOWN_ARROW = 80;
 const char ENTER_KEY = 13;
@@ -54,9 +56,9 @@ void paraphrase_file() {
 
 std::map<std::string, std::function<void()>> funcMap =
 {
-    { "Format Document", format_file},
-    { "Summarize Document", summarize_file},
-    { "Paraphrase Document", paraphrase_file}
+    { "Format document", format_file},
+    { "Summarize document", summarize_file},
+    { "Paraphrase document", paraphrase_file}
 
 };
 
@@ -82,10 +84,9 @@ int main() {
             if (selectedIndex == menuItems.size() - 1) { // "Exit" option
                 return 0;
             }
-            std::string calling_function = "Format document";
             std::cout << "You selected: " << menuItems[selectedIndex] << std::endl;
-            if (funcMap.find("Format document") != funcMap.end()) { // Check if the key exists
-                funcMap[calling_function](); // Call the associated function
+            if (funcMap.find(menuItems[selectedIndex]) != funcMap.end()) { // Check if the key exists
+                funcMap[menuItems[selectedIndex]](); // Call the associated function
             }
             else {
                 std::cerr << "Error: Invalid menu selection." << std::endl;
