@@ -68,10 +68,12 @@ void display::navigate_menu() {
             std::cout << "Files entered: ";
             for (const auto& file : files) {
                 std::cout << file << " " << std::endl;
-                formatter.read_file_content(file);
+                formatter.convert_file(file, menuItems[selectedIndex]);
+                std::cout << format("{} has been {}", file, menuItems[selectedIndex]);
             }
             std::cout << std::endl;
             //=====================================================================
+
             std::cout << "Enter any key to continue" << std::endl;
 
             getKeyPress(); // Wait for a keypress

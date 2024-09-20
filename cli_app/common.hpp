@@ -4,7 +4,6 @@
 
 #ifndef _COMMON_HPP_
 #define _COMMON_HPP_
-
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -16,7 +15,4 @@
 #include <sstream>
 #include "dotenv.h"
 #include <stdexcept>
-
-
-
 #endif // !_COMMON_HPP_

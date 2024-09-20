@@ -27,17 +27,17 @@ class eng_format
 {
 private:
     std::string api_url;
-    std::string model;
-
-    void process_files(const std::vector<std::string>& fileNames, const std::string& action);
-
+    std::string api_key;
+    std::string model="llama3-8b-8192";
 public:
-    std::string parse_response(const std::string& response);
-    std::string make_api_call(const std::string& prompt);
-    void save_file(const std::string& fileName, const std::string& content);
+    eng_format();
+    void set_model();
+    void get_model();
     std::string read_file_content(const std::string& fileName);
-    eng_format(const std::string& apiKey, const std::string& apiUrl);
-
+    std::string make_api_call(const std::string& prompt);
+    std::string parse_response(const std::string& response);
+    void save_file(const std::string& fileName, const std::string& content);
+    void convert_file(std::string filename, std::string Action);
 };
 
 #endif //_ENG_FORMAT_ H_

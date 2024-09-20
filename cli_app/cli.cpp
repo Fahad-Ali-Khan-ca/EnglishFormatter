@@ -5,7 +5,10 @@
 
 
 int main() {
-    // Define the menu items
+    dotenv::init();
+
+    // Define the menu items this should be done dynamically by someone who was administrator priviledges 
+    // potential user input for more diversity
     std::vector<std::string> menuItems = {
         "Format document",
         "Summarize document",

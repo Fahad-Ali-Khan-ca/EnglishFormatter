@@ -30,9 +30,4 @@ private:
     eng_format formatter;
 };
 
-
-
-
-
-
 #endif // !_DISPLAY_H_
