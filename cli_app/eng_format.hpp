@@ -28,11 +28,8 @@ class eng_format
 private:
     std::string api_url;
     std::string api_key;
-    std::string model="llama3-8b-8192";
 public:
     eng_format();
-    void set_model();
-    void get_model();
     std::string read_file_content(const std::string& fileName);
     std::string make_api_call(const std::string& prompt);
     std::string parse_response(const std::string& response);

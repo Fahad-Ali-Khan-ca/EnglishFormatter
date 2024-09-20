@@ -115,6 +115,6 @@ void eng_format::convert_file(std::string filename, std::string Action) {
     //4. parse the response 
     std::string parsed_data = parse_response(response);
     //5. save it to file 
-    filename += "_modified";
+    filename += output_name;
     save_file(filename,parsed_data);
 }

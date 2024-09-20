@@ -9,10 +9,15 @@
 #include <vector>
 #include <string>
 #include <format>
-#include "conio.h"
+#ifdef _WIN32
+#include <conio.h>
+#endif
 #include <map>
 #include <functional>
 #include <sstream>
-#include "dotenv.h"
 #include <stdexcept>
+// Declare variables as extern
+extern std::string model;
+extern std::string output_name;
+
 #endif // !_COMMON_HPP_

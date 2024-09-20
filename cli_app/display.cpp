@@ -65,9 +65,7 @@ void display::navigate_menu() {
             }
             //==================================TEST===============================
             std::vector<std::string> files = handle_file_input(menuItems[selectedIndex]);
-            std::cout << "Files entered: ";
             for (const auto& file : files) {
-                std::cout << file << " " << std::endl;
                 formatter.convert_file(file, menuItems[selectedIndex]);
                 std::cout << format("{} has been {}", file, menuItems[selectedIndex]);
             }
