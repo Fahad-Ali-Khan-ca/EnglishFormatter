@@ -4,6 +4,7 @@
 #ifndef _DISPLAY_H_
 #define _DISPLAY_H_
 #include "common.hpp"
+#include "eng_format.hpp"
 
 class display
 {
@@ -26,6 +27,7 @@ private:
     static constexpr char ENTER_KEY = 13;
     std::vector<std::string> menuItems;
     int selectedIndex = 0;
+    eng_format formatter;
 };
 
 

@@ -15,6 +15,7 @@
 #include <functional>
 #include <sstream>
 #include "dotenv.h"
+#include <stdexcept>
 
 
 

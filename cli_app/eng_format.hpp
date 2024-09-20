@@ -26,12 +26,17 @@ using json = nlohmann::json;  // This alias is necessary for using 'json' direct
 class eng_format
 {
 private:
+    std::string api_url;
+    std::string model;
+
+    void process_files(const std::vector<std::string>& fileNames, const std::string& action);
 
 public:
-    eng_format(/* args */);
-    ~eng_format();
-    void api_call();
-    void save_file();
+    std::string parse_response(const std::string& response);
+    std::string make_api_call(const std::string& prompt);
+    void save_file(const std::string& fileName, const std::string& content);
+    std::string read_file_content(const std::string& fileName);
+    eng_format(const std::string& apiKey, const std::string& apiUrl);
 
 };
 

@@ -68,10 +68,12 @@ void display::navigate_menu() {
             std::cout << "Files entered: ";
             for (const auto& file : files) {
                 std::cout << file << " " << std::endl;
+                formatter.read_file_content(file);
             }
             std::cout << std::endl;
-
             //=====================================================================
+            std::cout << "Enter any key to continue" << std::endl;
+
             getKeyPress(); // Wait for a keypress
             break;
         }
@@ -79,7 +81,8 @@ void display::navigate_menu() {
 }
 
 std::vector < std::string> display::handle_file_input(const std::string& action) {
-    std::cout << format("Please enter the name of the file(s) you want to {} (separated by spaces): ", action);
+    clearScreen();
+    std::cout << format("Please enter the name of the file(s) you want to {} (separated by spaces) \n ", action);
 
     std::string input;
     std::getline(std::cin, input); // Get the entire line of input
