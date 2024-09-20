@@ -1,152 +1,93 @@
 // cli.cpp - Function declarations for the eng_format class
 // 
 // 09-Sep-24  F.Khan         Created.
-#define CURL_STATICLIB
+#include "display.hpp"
+#include "dotenv.h"
 
-#include "eng_format.hpp"
-#include <map>
-#include <functional>
-#include <iostream>
-#include "curl/curl.h"
+const std::string TOOL_NAME = "EnglishFormatter";
+const std::string TOOL_VERSION = "0.1";
+std::string model = "llama3-8b-8192";
+std::string output_name = "_modified";
 
+int main( int argc, char *argv[]) {
 
-#ifdef _DEBUG
-#pragma comment (lib, "curl/libcurl_a_debug.lib")
-#else
-#pragma comment (lib, "curl/libcurl_a.lib")
-#endif
-#pragma comment (lib, "Normaliz.lib")
-#pragma comment (lib, "Ws2_32.lib")
-#pragma comment (lib, "Wldap32.lib")
-#pragma comment (lib, "advapi32.lib")
+    bool showVersion = false;
+    bool showHelp = false;
 
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
 
-//Numerical code for keys assinged to const char 
-
-//Test libcurl=============================
-
-// ===============================================================================================================
-
-size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
-    ((std::string*)userp)->append((char*)contents, size * nmemb);
-    return size * nmemb;
-}
-
-void test_libcurl() {
-    CURL* curl;
-    CURLcode res;
-    std::string readBuffer;
-
-    curl = curl_easy_init();
-    if (curl) {
-        curl_easy_setopt(curl, CURLOPT_URL, "http://example.com");
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-
-        res = curl_easy_perform(curl);
-        if (res != CURLE_OK) {
-            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        if (arg == "--version" || arg == "-v") {
+            showVersion = true;
+            break; // Exit the loop; no need to process further arguments
         }
-        else {
-            std::cout << "Response from http://example.com:\n" << readBuffer << std::endl;
+        else if (arg == "--help" || arg == "-h") {
+            showHelp = true;
+            break; // Exit the loop; no need to process further arguments
         }
-
-        curl_easy_cleanup(curl);
-    }
-}
-
-
-const char UP_ARROW = 72;
-const char DOWN_ARROW = 80;
-const char ENTER_KEY = 13;
-
-void clearScreen() {
-#ifdef _WIN32
-    system("cls");
-#else
-    system("clear");
-#endif
-}
-
-
-
-void displayMenu(const std::vector<std::string>& menuItems, int selectedIndex) {
-    system("cls"); 
-    for (int i = 0; i < menuItems.size(); ++i) {
-        if (i == selectedIndex) {
-            std::cout << "--> " << menuItems[i] << std::endl; 
-        }
-        else {
-            std::cout << "  " << menuItems[i] << std::endl;
-        }
-    }
-}
-void format_file() {
-    std::string Name;
-    std::cout << "Please enter the name of the file you want to format" << std::endl;
-    std::cin >> Name;
-    std::cout << format("{} has been formatted", Name);
-
-}
-
-void summarize_file() {
-    std::string Name;
-    std::cout << "Please enter the name of the file you want to Summarize" << std::endl;
-    std::cin >> Name;
-    std::cout << format("{} has been Summarized", Name);
-
-}
-void paraphrase_file() {
-    std::string Name;
-    std::cout << "Please enter the name of the file you want to Paraphrase" << std::endl;
-    std::cin >> Name;
-    std::cout << format("{} has been Paraphrase", Name);
-
-}
-
-std::map<std::string, std::function<void()>> funcMap =
-{
-    { "Format document", format_file},
-    { "Summarize document", summarize_file},
-    { "Paraphrase document", paraphrase_file}
-
-};
-
-
-int main() {
-    test_libcurl();
-    std::vector<std::string> menuItems = { "Format document", "Summarize document", "Paraphrase document", "Exit" };
-    int selectedIndex = 0;
-    char key;
-    while (true) {
-        displayMenu(menuItems, selectedIndex);
-
-        key = _getch(); // Read key press
-
-        switch (key) {
-        case UP_ARROW: // Up arrow key
-            selectedIndex = (selectedIndex > 0) ? selectedIndex - 1 : menuItems.size() - 1;
-            break;
-        case DOWN_ARROW: // Down arrow key
-            selectedIndex = (selectedIndex < menuItems.size() - 1) ? selectedIndex + 1 : 0;
-            break;
-        case ENTER_KEY: // Enter key
-            if (selectedIndex == menuItems.size() - 1) { // "Exit" option
-                return 0;
-            }
-            std::cout << "You selected: " << menuItems[selectedIndex] << std::endl;
-            if (funcMap.find(menuItems[selectedIndex]) != funcMap.end()) { // Check if the key exists
-                funcMap[menuItems[selectedIndex]](); // Call the associated function
+        else if (arg == "--model" || arg == "-m") {
+            if (i + 1 < argc) {
+                std::string old_model = model;
+                model = argv[++i]; // Increment i to skip over the value
+                std::cout << "Model changed from " << old_model << " to " << model << "." << std::endl;
             }
             else {
-                std::cerr << "Error: Invalid menu selection." << std::endl;
+                std::cerr << "Error: The option '" << arg << "' requires a model name as an argument." << std::endl;
+                return 1; // Exit with error code
             }
-            _getch(); // Wait for user to press a key
-            break;
+        }
+        else if (arg == "--output" || arg == "-o") {
+            if (i + 1 < argc) {
+                output_name = argv[++i]; // Increment i to skip over the value
+                std::cout << "Output files will now be saved under [name]" << output_name << std::endl;
+            }
+            else {
+                std::cerr << "Error: The option '" << arg << "' requires an output name as an argument." << std::endl;
+                return 1; // Exit with error code
+            }
+        }
+        else {
+            std::cerr << "Error: Unrecognized option '" << arg << "'" << std::endl;
+            return 1; // Exit with error code
         }
     }
 
+    if (showVersion) {
+        std::cout << "Tool Name: " << TOOL_NAME << "\nVersion: " << TOOL_VERSION << std::endl;
+        return 0;
+    }
+
+    if (showHelp) {
+        std::cout << "Usage: my_tool [options]\n"
+            << "Options:\n"
+            << "  -h, --help           Show this help message and exit\n"
+            << "  -v, --version        Show the tool's version and exit\n"
+            << "  -m, --model MODEL    Specify the model to use\n"
+            << "  -o, --output NAME    Specify the output file suffix\n"
+            << std::endl;
+
+    }
+
+    dotenv::init();
+
+    
+
+    // Define the menu items this should be done dynamically by someone who was administrator priviledges 
+    // potential user input for more diversity
+    std::vector<std::string> menuItems = {
+        "Format document",
+        "Summarize document",
+        "Paraphrase document",
+        "Exit"
+    };
+
+    // Create an instance of the display class
+    display menuDisplay(menuItems);
+
+    // Call the navigate_menu() method to start the menu interaction
+    menuDisplay.navigate_menu();
+
+    // Program ends when navigate_menu() returns (e.g., when "Exit" is selected)
+    std::cout << "\nProgram exited." << std::endl;
     return 0;
 }
-
-
