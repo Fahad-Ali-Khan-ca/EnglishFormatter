@@ -16,6 +16,7 @@ void display::clearScreen() {
 
 display::display(const std::vector<std::string>& items) : menuItems(items), selectedIndex(0) {}
 
+//should work for unix based distros
 char display::getKeyPress() {
 #ifdef _WIN32
     return _getch();
@@ -63,15 +64,12 @@ void display::navigate_menu() {
             if (selectedIndex == menuItems.size() - 1) {
                 return; // Exit option
             }
-            //==================================TEST===============================
             std::vector<std::string> files = handle_file_input(menuItems[selectedIndex]);
             for (const auto& file : files) {
                 formatter.convert_file(file, menuItems[selectedIndex]);
-                std::cout << format("{} has been {}", file, menuItems[selectedIndex]);
+                std::cout << format("{} has been {}", file, menuItems[selectedIndex]) << std::endl;
             }
             std::cout << std::endl;
-            //=====================================================================
-
             std::cout << "Enter any key to continue" << std::endl;
 
             getKeyPress(); // Wait for a keypress
@@ -97,7 +95,7 @@ std::vector < std::string> display::handle_file_input(const std::string& action)
     }
 
 
-// ToDO: send the filenames to eng_format and action for parsing and api calls
+// ToDO: send the filenames to eng_format and action for parsing and api calls (Maybe Release 0.2)
 
     return fileNames;
 }
