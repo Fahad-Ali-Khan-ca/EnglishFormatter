@@ -63,14 +63,12 @@ void display::navigate_menu() {
             if (selectedIndex == menuItems.size() - 1) {
                 return; // Exit option
             }
-            //==================================TEST===============================
             std::vector<std::string> files = handle_file_input(menuItems[selectedIndex]);
             for (const auto& file : files) {
                 formatter.convert_file(file, menuItems[selectedIndex]);
-                std::cout << format("{} has been {}", file, menuItems[selectedIndex]);
+                std::cout << format("{} has been {}", file, menuItems[selectedIndex]) << std::endl;
             }
             std::cout << std::endl;
-            //=====================================================================
 
             std::cout << "Enter any key to continue" << std::endl;
 
