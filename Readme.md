@@ -186,7 +186,7 @@ Run the tool without any arguments to start the interactive menu:
 ### Summarizing a Document
 
 ```bash
-./EnglishFormatter
+./cli_app.exe
 ```
 
 - **Select**: Summarize document
@@ -199,7 +199,7 @@ Run the tool without any arguments to start the interactive menu:
 ### Changing the Language Model
 
 ```bash
-./EnglishFormatter --model gpt-4
+./cli_app.exe --model gpt-4
 ```
 
 - **Select**: Paraphrase document
