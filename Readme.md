@@ -130,19 +130,21 @@ Options:
   -v, --version         Show the tool's version and exit
   -m, --model MODEL     Specify the language model to use (default: llama3-8b-8192)
   -o, --output SUFFIX   Specify the output file suffix (default: _modified)
+  -t, --token-usage     Show token usage and exit
 ```
 
 - **--help (-h)**: Displays help information.
 - **--version (-v)**: Shows the tool's version.
 - **--model (-m)**: Sets a custom language model.
 - **--output (-o)**: Sets a custom suffix for output files.
+- **--token-usage (-t)**: Shows token-usage information.
 
 ### Interactive Menu
 
 Run the tool without any arguments to start the interactive menu:
 
 ```bash
-./EnglishFormatter
+./cli_app.exe
 ```
 
 #### Menu Options
