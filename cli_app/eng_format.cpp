@@ -118,3 +118,21 @@ void eng_format::convert_file(std::string filename, std::string Action) {
     filename += output_name;
     save_file(filename,parsed_data);
 }
+
+std::string eng_format::get_token_info(const std::string& response) {
+    // Parse the JSON response
+    auto json_response = json::parse(response);
+    if (json_response.contains("usage")) {
+        int prompt_tokens = json_response["usage"]["prompt_tokens"];
+        int completion_tokens = json_response["usage"]["completion_tokens"];
+        int total_tokens = json_response["usage"]["total_tokens"];
+
+        // Format the token usage information
+        return "Token usage:\nPrompt tokens: " + std::to_string(prompt_tokens) +
+            "\nCompletion tokens: " + std::to_string(completion_tokens) +
+            "\nTotal tokens: " + std::to_string(total_tokens);
+    }
+    else {
+        return "Token usage information not found in response.";
+    }
+}

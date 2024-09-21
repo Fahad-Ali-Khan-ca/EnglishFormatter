@@ -3,6 +3,7 @@
 // 09-Sep-24  F.Khan         Created.
 // 11-Sep-24  F.Khan         Added Curl
 // 14-Sep-24  F.Khan         Added nlohman json for parsing json objects
+// 19-Sep-24  I.Parmar       Added token Info feature 
 #ifndef _ENG_FORMAT_H_
 #define _ENG_FORMAT_H_
 #include "common.hpp"
@@ -35,6 +36,8 @@ public:
     std::string parse_response(const std::string& response);
     void save_file(const std::string& fileName, const std::string& content);
     void convert_file(std::string filename, std::string Action);
+    std::string get_token_info(const std::string& response);
+
 };
 
 #endif //_ENG_FORMAT_ H_

@@ -42,6 +42,7 @@ void display::show_menu() {
             std::cout << "  " << menuItems[i] << std::endl;
         }
     }
+
 }
 
 
