@@ -1,7 +1,7 @@
 
 # EnglishFormatter
 
-EnglishFormatter is a command-line tool designed to help users format, summarize, or paraphrase text documents using advanced language models. It provides an interactive menu-driven interface and supports customization through command-line arguments.
+EnglishFormatter is a command-line tool designed to help users format, summarize, or paraphrase text documents using advanced language models. It provides an interactive menu-driven interface and supports customization through command-line arguments. Here is the link to some of the commands run in vscode https://youtu.be/6LvhQ6r_KDE 
 
 ## Table of Contents
 
