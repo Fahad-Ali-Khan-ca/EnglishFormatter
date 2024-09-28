@@ -16,8 +16,11 @@
 #include <functional>
 #include <sstream>
 #include <stdexcept>
+#include <filesystem>
+
 // Declare variables as extern
 extern std::string model;
 extern std::string output_name;
+namespace fs = std::filesystem;
 
 #endif // !_COMMON_HPP_

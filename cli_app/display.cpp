@@ -66,18 +66,18 @@ void display::navigate_menu() {
             }
             std::vector<std::string> files = handle_file_input(menuItems[selectedIndex]);
             for (const auto& file : files) {
-                formatter.convert_file(file, menuItems[selectedIndex]);
+                formatter.convert_file(file, menuItems[selectedIndex]);  // Assuming convert_file is a valid method
                 std::cout << format("{} has been {}", file, menuItems[selectedIndex]) << std::endl;
             }
             std::cout << std::endl;
 
             std::cout << "Enter any key to continue" << std::endl;
-
             getKeyPress(); // Wait for a keypress
             break;
         }
     }
 }
+
 
 std::vector < std::string> display::handle_file_input(const std::string& action) {
     clearScreen();
@@ -87,16 +87,33 @@ std::vector < std::string> display::handle_file_input(const std::string& action)
     std::getline(std::cin, input); // Get the entire line of input
 
     std::istringstream iss(input);
-    std::string fileName;
+    std::string path;
+    std::vector<std::string> files;
 
     // Parse the input by splitting it based on space
-    std::vector<std::string> fileNames;
-    while (iss >> fileName) {
-        fileNames.push_back(fileName);
+
+    while (iss >> path) {
+        if (std::filesystem::exists(path)) {
+            if (std::filesystem::is_regular_file(path)) {
+                files.push_back(path); // It's a file, add it directly
+            }
+            else if (std::filesystem::is_directory(path)) {
+                // It's a folder, process all files inside recursively
+                for (const auto& entry : std::filesystem::recursive_directory_iterator(path)) {
+                    if (std::filesystem::is_regular_file(entry.path())) {
+                        files.push_back(entry.path().string()); // Add all files in the folder
+                    }
+                }
+            }
+            else {
+                std::cerr << "Unknown path type: " << path << std::endl;
+            }
+        }
+        else {
+            std::cerr << "Path does not exist: " << path << std::endl;
+        }
     }
 
+    return files;
 
-// ToDO: send the filenames to eng_format and action for parsing and api calls
-
-    return fileNames;
 }
