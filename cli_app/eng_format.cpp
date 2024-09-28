@@ -43,6 +43,17 @@ std::string eng_format::make_api_call(const std::string& prompt)
     jsonData["model"] = model;
     jsonData["messages"] = { { {"role", "user"}, {"content", prompt} } };
 
+    try
+    {
+        std::string jsonString = jsonData.dump();  // Attempt to dump the JSON
+        std::cout << "JSON String: " << jsonString << std::endl;
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "Error during JSON serialization: " << e.what() << std::endl;
+        throw;  // Re-throw the exception after logging
+    }
+
     std::string jsonString = jsonData.dump();
     std::string responseString;
 

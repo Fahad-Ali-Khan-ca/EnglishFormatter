@@ -1,8 +1,12 @@
 // cli.cpp - Function declarations for the eng_format class
 // 
 // 09-Sep-24  F.Khan         Created.
-#include "display.hpp"
+// 16-Sep-24  I.Parmar       Added Token-Usage Feature
+
 #include "dotenv.h"
+#include "display.hpp"
+
+
 
 const std::string TOOL_NAME = "EnglishFormatter";
 const std::string TOOL_VERSION = "0.1";
@@ -11,10 +15,12 @@ std::string output_name = "_modified";
 bool showTokenUsage = false;
 
 int main( int argc, char *argv[]) {
+    dotenv::init();
+
+    char* apiKeyCStr = std::getenv("API_KEY");
 
     bool showVersion = false;
     bool showHelp = false;
-    dotenv::init();
 
 
     for (int i = 1; i < argc; ++i) {
@@ -73,6 +79,7 @@ int main( int argc, char *argv[]) {
         return 0;
 
     }
+// ==============================================Work Done By Inderpreet Singh Parmar========================================
 
     if (showTokenUsage) {
         eng_format eng;
@@ -92,11 +99,10 @@ int main( int argc, char *argv[]) {
         return 0;
     }
 
+// ==============================================================================================================================
 
 
 
-
-    char* apiKeyCStr = std::getenv("API_KEY");
     if (apiKeyCStr == nullptr) {
         std::cerr << "Error: API_KEY is not set. Please set it in the .env file or as an environment variable." << std::endl;
         return 1;
