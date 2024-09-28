@@ -1,6 +1,7 @@
 #include "Eng_Format.hpp"
 
 
+// CURL WriteCallback function for writing response data into a string
 size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp)
 {
     size_t totalSize = size * nmemb;
@@ -9,27 +10,34 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp)
     return totalSize;
 }
 
-
-// Parse the **response** from the api 
+// Parse the response from the API
 std::string eng_format::parse_response(const std::string& response)
 {
-    json jsonResponse = json::parse(response);
+    try
+    {
+        json jsonResponse = json::parse(response);
 
-    if (jsonResponse.contains("choices") && !jsonResponse["choices"].empty())
-    {
-        return jsonResponse["choices"][0]["message"]["content"].get<std::string>();
+        if (jsonResponse.contains("choices") && !jsonResponse["choices"].empty())
+        {
+            return jsonResponse["choices"][0]["message"]["content"].get<std::string>();
+        }
+        else if (jsonResponse.contains("error"))
+        {
+            std::string errorMessage = jsonResponse["error"]["message"].get<std::string>();
+            throw std::runtime_error("API Error: " + errorMessage);
+        }
+        else
+        {
+            throw std::runtime_error("Invalid API response format");
+        }
     }
-    else if (jsonResponse.contains("error"))
+    catch (const std::exception& e)
     {
-        std::string errorMessage = jsonResponse["error"]["message"].get<std::string>();
-        throw std::runtime_error("API Error: " + errorMessage);
-    }
-    else
-    {
-        throw std::runtime_error("Invalid API response");
+        throw std::runtime_error("Failed to parse API response: " + std::string(e.what()));
     }
 }
 
+// Function to make an API call with error handling
 std::string eng_format::make_api_call(const std::string& prompt)
 {
     CURL* curl = curl_easy_init();
@@ -41,20 +49,19 @@ std::string eng_format::make_api_call(const std::string& prompt)
     // Prepare JSON payload
     json jsonData;
     jsonData["model"] = model;
-    jsonData["messages"] = { { {"role", "user"}, {"content", prompt} } };
+    jsonData["messages"] = { {{"role", "user"}, {"content", prompt}} };
 
+    std::string jsonString;
     try
     {
-        std::string jsonString = jsonData.dump();  // Attempt to dump the JSON
-        std::cout << "JSON String: " << jsonString << std::endl;
+        jsonString = jsonData.dump(); // Attempt to dump the JSON
     }
     catch (const std::exception& e)
     {
-        std::cerr << "Error during JSON serialization: " << e.what() << std::endl;
-        throw;  // Re-throw the exception after logging
+        curl_easy_cleanup(curl);  // Clean up curl if error occurs
+        throw std::runtime_error("Error during JSON serialization: " + std::string(e.what()));
     }
 
-    std::string jsonString = jsonData.dump();
     std::string responseString;
 
     // Set up headers
@@ -86,6 +93,7 @@ std::string eng_format::make_api_call(const std::string& prompt)
     return responseString;
 }
 
+// Function to save content to a file
 void eng_format::save_file(const std::string& fileName, const std::string& content)
 {
     std::ofstream outFile(fileName);
@@ -95,14 +103,35 @@ void eng_format::save_file(const std::string& fileName, const std::string& conte
     }
 
     outFile << content;
+    if (!outFile)
+    {
+        throw std::runtime_error("Error writing to file: " + fileName);
+    }
+
     outFile.close();
 }
 
-eng_format::eng_format() {
-    api_key = std::getenv("API_KEY");
-    api_url = std::getenv("API_URL");
+// Constructor to initialize API details
+eng_format::eng_format()
+{
+    const char* apiKeyCStr = std::getenv("API_KEY");
+    const char* apiUrlCStr = std::getenv("API_URL");
+
+    if (apiKeyCStr == nullptr)
+    {
+        throw std::runtime_error("API key not found in environment variables.");
+    }
+    api_key = std::string(apiKeyCStr);  // Convert to std::string after null check
+
+    if (apiUrlCStr == nullptr)
+    {
+        throw std::runtime_error("API URL not found in environment variables.");
+    }
+    api_url = std::string(apiUrlCStr);  // Convert to std::string after null check
 }
 
+
+// Read file content into a string
 std::string eng_format::read_file_content(const std::string& fileName)
 {
     std::ifstream file(fileName);
@@ -116,34 +145,57 @@ std::string eng_format::read_file_content(const std::string& fileName)
     return buffer.str();
 }
 
-void eng_format::convert_file(std::string filename, std::string Action) {
-    // 1. read the file contents and generate the data 
-    std::string content = read_file_content(filename);
-    // 2. generate prompt for the api call
-    std::string prompt = format("Can you please {0} the text and please provide the {0} text only (not a single extra character). {1}", Action, content);
-    //3. get response from api
-    std::string response = make_api_call(prompt);
-    //4. parse the response 
-    std::string parsed_data = parse_response(response);
-    //5. save it to file 
-    filename += output_name;
-    save_file(filename,parsed_data);
+// Convert file using the API call and save the output
+void eng_format::convert_file(std::string filename, std::string action)
+{
+    try
+    {
+        // 1. Read the file contents and generate the data
+        std::string content = read_file_content(filename);
+
+        // 2. Generate the prompt for the API call
+        std::string prompt = format("Can you please {0} the text and provide the {0} text only. {1}", action, content);
+
+        // 3. Get response from API
+        std::string response = make_api_call(prompt);
+
+        // 4. Parse the response
+        std::string parsed_data = parse_response(response);
+
+        // 5. Save it to a file
+        filename += output_name;
+        save_file(filename, parsed_data);
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "Error converting file " << filename << ": " << e.what() << std::endl;
+        throw;
+    }
 }
 
-std::string eng_format::get_token_info(const std::string& response) {
-    // Parse the JSON response
-    auto json_response = json::parse(response);
-    if (json_response.contains("usage")) {
-        int prompt_tokens = json_response["usage"]["prompt_tokens"];
-        int completion_tokens = json_response["usage"]["completion_tokens"];
-        int total_tokens = json_response["usage"]["total_tokens"];
+// Function to get token usage information from the API response
+std::string eng_format::get_token_info(const std::string& response)
+{
+    try
+    {
+        auto json_response = json::parse(response);
+        if (json_response.contains("usage"))
+        {
+            int prompt_tokens = json_response["usage"]["prompt_tokens"];
+            int completion_tokens = json_response["usage"]["completion_tokens"];
+            int total_tokens = json_response["usage"]["total_tokens"];
 
-        // Format the token usage information
-        return "Token usage:\nPrompt tokens: " + std::to_string(prompt_tokens) +
-            "\nCompletion tokens: " + std::to_string(completion_tokens) +
-            "\nTotal tokens: " + std::to_string(total_tokens);
+            return "Token usage:\nPrompt tokens: " + std::to_string(prompt_tokens) +
+                "\nCompletion tokens: " + std::to_string(completion_tokens) +
+                "\nTotal tokens: " + std::to_string(total_tokens);
+        }
+        else
+        {
+            return "Token usage information not found in response.";
+        }
     }
-    else {
-        return "Token usage information not found in response.";
+    catch (const std::exception& e)
+    {
+        throw std::runtime_error("Failed to parse token info from response: " + std::string(e.what()));
     }
 }
