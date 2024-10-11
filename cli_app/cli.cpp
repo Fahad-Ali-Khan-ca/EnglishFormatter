@@ -6,18 +6,31 @@
 #include "dotenv.h"
 #include "display.hpp"
 
-const std::string TOOL_NAME = "EnglishFormatter";
-const std::string TOOL_VERSION = "0.1";
-std::string model = "llama3-8b-8192";
-std::string output_name = "_modified";
-bool showTokenUsage = false;
+bool test_env(char *apiKeyCStr, char* apiUrlCStr) {
+    if (apiKeyCStr == nullptr)
+    {
+        std::cerr << "Error: API_KEY is not set. Please set it in the .env file or as an environment variable." << std::endl;
+        return false;
+    }
+    else if (apiUrlCStr == nullptr) {
+        std::cerr << "Error: API_URL is not set. Please set it in the .env file or as an environment variable." << std::endl;
+        return false;
+    }
+    else { return true; }
+}
+
 
 int main(int argc, char *argv[])
 {
     dotenv::init();
 
     char *apiKeyCStr = std::getenv("API_KEY");
-
+    char* apiUrlCStr = std::getenv("API_URL");
+    bool retval = false;
+    retval = test_env(apiKeyCStr, apiUrlCStr);
+    if (!retval) {
+        return 1;
+    }
     bool showVersion = false;
     bool showHelp = false;
 
@@ -98,7 +111,8 @@ int main(int argc, char *argv[])
 
         try
         {
-            std::string response = eng.make_api_call("Sample prompt to LLM");
+            api_client AI_api;
+            std::string response = AI_api.make_api_call("Sample prompt to LLM");
 
             // Assuming the token info is parsed correctly from the response
             std::string token_info = eng.get_token_info(response);
@@ -114,21 +128,16 @@ int main(int argc, char *argv[])
 
     // ==============================================================================================================================
 
-    if (apiKeyCStr == nullptr)
-    {
-        std::cerr << "Error: API_KEY is not set. Please set it in the .env file or as an environment variable." << std::endl;
-        return 1;
-    }
-    std::string apiKey = apiKeyCStr;
-    std::cout << "API_KEY obtained." << std::endl;
 
+   
     // Define the menu items this should be done dynamically by someone who was administrator priviledges
     // potential user input for more diversity
     std::vector<std::string> menuItems = {
         "Format document",
         "Summarize document",
         "Paraphrase document",
-        "Exit"};
+        "Exit"
+    };
 
     // Create an instance of the display class
     display menuDisplay(menuItems);
@@ -140,3 +149,4 @@ int main(int argc, char *argv[])
     std::cout << "\nProgram exited." << std::endl;
     return 0;
 }
+

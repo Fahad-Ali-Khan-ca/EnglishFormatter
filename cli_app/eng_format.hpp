@@ -9,9 +9,6 @@
 #include "common.hpp"
 #define CURL_STATICLIB
 #include "curl/curl.h"
-#include "json.hpp"          // Path based on where you saved json.hpp
-using json = nlohmann::json; // This alias is necessary for using 'json' directly
-
 #ifdef _DEBUG
 #pragma comment(lib, "curl/libcurl_a_debug.lib")
 #else
@@ -21,17 +18,13 @@ using json = nlohmann::json; // This alias is necessary for using 'json' directl
 #pragma comment(lib, "Ws2_32.lib")
 #pragma comment(lib, "Wldap32.lib")
 #pragma comment(lib, "advapi32.lib")
+#include "api_client.hpp"
 
 class eng_format
 {
-private:
-    std::string api_url;
-    std::string api_key;
-
 public:
-    eng_format();
+    api_client AI_api;
     std::string read_file_content(const std::string &fileName);
-    std::string make_api_call(const std::string &prompt);
     std::string parse_response(const std::string &response);
     void save_file(const std::string &fileName, const std::string &content);
     void convert_file(std::string filename, std::string Action);

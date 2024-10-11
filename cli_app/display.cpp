@@ -13,7 +13,6 @@ void display::clearScreen() {
 }
 
 
-
 display::display(const std::vector<std::string>& items) : menuItems(items), selectedIndex(0) {}
 
 char display::getKeyPress() {
