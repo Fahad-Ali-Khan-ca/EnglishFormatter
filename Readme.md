@@ -221,37 +221,14 @@ Run the tool without any arguments to start the interactive menu:
 - **dotenv.h/cpp**: Manages environment variables.
 - **common.hpp**: Common includes and declarations.
 - **.env**: Contains environment variables like `API_KEY`.
-
-### Building from Source
-
-Ensure all dependencies are installed and build the project using your preferred compiler.
+  
+For development and contribution guidelines, refer to [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
 ## Contributing
 
-Contributions are welcome! Please follow these steps:
-
-1. **Fork the Repository**
-2. **Create a Feature Branch**
-
-   ```bash
-   git checkout -b feature/YourFeature
-   ```
-
-3. **Commit Changes**
-
-   ```bash
-   git commit -am 'Add new feature'
-   ```
-
-4. **Push to Branch**
-
-   ```bash
-   git push origin feature/YourFeature
-   ```
-
-5. **Create a Pull Request**
+For development and contribution guidelines, refer to [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
