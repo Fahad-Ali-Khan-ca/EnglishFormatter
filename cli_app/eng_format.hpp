@@ -20,15 +20,14 @@
 #pragma comment(lib, "advapi32.lib")
 #include "api_client.hpp"
 
-class eng_format
-{
-public:
-    api_client AI_api;
-    std::string read_file_content(const std::string &fileName);
-    std::string parse_response(const std::string &response);
-    void save_file(const std::string &fileName, const std::string &content);
-    void convert_file(std::string filename, std::string Action);
-    std::string get_token_info(const std::string &response);
+class eng_format {
+ public:
+  api_client AI_api;
+  std::string read_file_content(const std::string &fileName);
+  std::string parse_response(const std::string &response);
+  static void save_file(const std::string &fileName, const std::string &content);
+  void convert_file(std::string filename, std::string Action);
+  std::string get_token_info(const std::string &response);
 };
 
-#endif //_ENG_FORMAT_ H_
+#endif  //_ENG_FORMAT_ H_
