@@ -55,7 +55,7 @@ enable_testing()
 # ------------------------
 
 # Define the main executable and link it against the core library
-add_executable(EnglishFormatter cli_app/src/cli.cpp)
+add_executable(EnglishFormatter cli_app/src/main.cpp)
 target_link_libraries(EnglishFormatter PRIVATE core_lib)
 
 # ------------------------
@@ -77,8 +77,7 @@ target_include_directories(EnglishFormatterTests PRIVATE cli_app/include)
 target_link_libraries(EnglishFormatterTests 
     PRIVATE 
         GTest::gtest 
-        GTest::gtest_main 
-        GMock::gmock_main 
+        GMock::gmock 
         core_lib
 )
 
