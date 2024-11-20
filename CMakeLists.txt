@@ -30,7 +30,7 @@ target_link_libraries(core_lib PUBLIC CURL::libcurl fmt::fmt)
 # ------------------------
 
 # Define the main executable and link it against the core library
-add_executable(EnglishFormatter cli_app/src/main.cpp)  # Ensure you have a main.cpp
+add_executable(EnglishFormatter cli_app/src/cli.cpp)  # Ensure you have a main.cpp
 target_link_libraries(EnglishFormatter PRIVATE core_lib)
 
 # ------------------------
