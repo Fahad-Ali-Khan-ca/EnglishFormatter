@@ -1,40 +1,44 @@
-name: Build and Test EnglishFormatter
+name: CMake Build and Test
 
 on:
   push:
     branches:
       - main
   pull_request:
+    branches:
+      - main
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository
-      - name: Checkout repository
+      # Checkout the code
+      - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Step 2: Install dependencies
-      - name: Install dependencies
+      # Install dependencies
+      - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y g++ libcurl4-openssl-dev cmake libgtest-dev
-          # Build Google Test (it’s not prebuilt on Ubuntu)
-          cd /usr/src/googletest
-          sudo cmake .
-          sudo make
-          sudo cp *.a /usr/lib
+          sudo apt-get install -y cmake g++ libcurl4-openssl-dev libgtest-dev
           
-      # Step 3: Configure and Build
-      - name: Configure and build
+      # Build GoogleTest (libgtest.a and libgmock.a)
+      - name: Build GoogleTest
+        run: |
+          mkdir -p /usr/src/gtest/build && cd /usr/src/gtest/build
+          cmake .. && make
+          sudo cp *.a /usr/lib
+
+      # Configure and build the project
+      - name: Configure and Build
         run: |
           mkdir -p build
-          cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+          cmake -S . -B build
           cmake --build build
 
-      # Step 4: Run Tests
-      - name: Run tests
+      # Run tests
+      - name: Run Tests
         run: |
           cd build
           ctest --output-on-failure
