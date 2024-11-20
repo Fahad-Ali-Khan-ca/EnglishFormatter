@@ -7,6 +7,11 @@ Thank you for your interest in contributing to **EnglishFormatter**! This docume
 - [Prerequisites](#prerequisites)
 - [Setting Up the Development Environment](#setting-up-the-development-environment)
 - [Building the Project](#building-the-project)
+- [Running Tests](#running-tests)
+  - [Setting Up the Testing Framework](#setting-up-the-testing-framework)
+  - [Running Test Cases](#running-test-cases)
+  - [Adding New Tests](#adding-new-tests)
+  - [Test Guidelines](#test-guidelines)
 - [Source Code Formatting](#source-code-formatting)
   - [Setting Up clang-format](#setting-up-clang-format)
   - [Running clang-format](#running-clang-format)
@@ -85,6 +90,88 @@ g++ -std=c++17 -o EnglishFormatter main.cpp eng_format.cpp display.cpp dotenv.cp
 - Add all source files to the project.
 - Link against `libcurl` and ensure all dependencies are included.
 - Build the project.
+
+## Running Tests
+
+### Setting Up the Testing Framework
+
+We use **Google Test (GTest)** and **Google Mock (GMock)** for writing and running unit tests. 
+
+#### Installing Google Test
+
+1. **Linux**:
+   ```bash
+   sudo apt-get install libgtest-dev
+   cd /usr/src/gtest
+   sudo cmake .
+   sudo make
+   sudo cp *.a /usr/lib
+   ```
+
+2. **Windows**:
+   Download the [Google Test source](https://github.com/google/googletest) and build it according to the instructions.
+
+3. **MacOS**:
+   Install via Homebrew:
+   ```bash
+   brew install googletest
+   ```
+
+### Running Test Cases
+
+1. Build the tests:
+   ```bash
+   g++ -std=c++17 -I<gtest-include-path> -I<project-include-path> tests.cpp -o tests -lgtest -lgmock -lpthread
+   ```
+
+2. Run the tests:
+   ```bash
+   ./tests
+   ```
+
+3. View the results in the terminal. Successful tests will pass, and failed tests will display detailed error messages.
+
+---
+
+### Adding New Tests
+
+#### Test Organization
+- Test cases are located in the `tests.cpp` file.
+- Each test case corresponds to a specific function or class in the project.
+
+#### Example of a New Test Case
+
+To add a test for `eng_format`:
+
+```cpp
+#include <gtest/gtest.h>
+#include "eng_format.hpp"
+
+TEST(EngFormatTests, NewFunctionTest) {
+    eng_format formatter;
+    // Add logic for the new test case
+    EXPECT_EQ(formatter.some_function(), expected_result);
+}
+```
+
+1. Add the test case in `tests.cpp`.
+2. Rebuild and run the tests to verify.
+
+### Test Guidelines
+
+1. **Test Coverage**:
+   - Ensure new features and bug fixes are covered by tests.
+   - Write tests for edge cases (e.g., invalid inputs, empty strings, etc.).
+
+2. **Mocking**:
+   - Use `Google Mock` to mock external dependencies, such as API calls.
+
+3. **Readability**:
+   - Write clear and descriptive test names.
+   - Include comments if the test logic is complex.
+
+---
+
 
 ## Source Code Formatting
 
