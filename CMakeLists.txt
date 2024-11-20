@@ -9,10 +9,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Core Library Configuration
 # ------------------------
 
-# Collect all source files for the core library
+# Collect all source files for the core library, excluding cli.cpp
 file(GLOB CORE_SOURCES
     cli_app/src/*.cpp
 )
+
+# Exclude cli.cpp from CORE_SOURCES
+list(FILTER CORE_SOURCES EXCLUDE REGEX "cli\\.cpp$")
 
 # Define the core library
 add_library(core_lib STATIC ${CORE_SOURCES})
@@ -55,7 +58,7 @@ enable_testing()
 # ------------------------
 
 # Define the main executable and link it against the core library
-add_executable(EnglishFormatter cli_app/src/main.cpp)
+add_executable(EnglishFormatter cli_app/src/cli.cpp)
 target_link_libraries(EnglishFormatter PRIVATE core_lib)
 
 # ------------------------
