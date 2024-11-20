@@ -5,21 +5,33 @@ project(EnglishFormatter LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Add source files
-file(GLOB SOURCES
+# ------------------------
+# Core Library Configuration
+# ------------------------
+
+# Collect all source files for the core library
+file(GLOB CORE_SOURCES
     cli_app/src/*.cpp
 )
 
-# Define the main executable
-add_executable(${PROJECT_NAME} ${SOURCES})
+# Define the core library
+add_library(core_lib STATIC ${CORE_SOURCES})
 
-# Include directories for headers
-target_include_directories(${PROJECT_NAME} PRIVATE cli_app/include)
+# Include directories for the core library
+target_include_directories(core_lib PUBLIC cli_app/include)
 
 # Find and link CURL and fmt libraries
 find_package(CURL REQUIRED)
 find_package(fmt REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE CURL::libcurl fmt::fmt)
+target_link_libraries(core_lib PUBLIC CURL::libcurl fmt::fmt)
+
+# ------------------------
+# Main Executable Configuration
+# ------------------------
+
+# Define the main executable and link it against the core library
+add_executable(EnglishFormatter cli_app/src/main.cpp)  # Ensure you have a main.cpp
+target_link_libraries(EnglishFormatter PRIVATE core_lib)
 
 # ------------------------
 # GoogleTest and GoogleMock Configuration
@@ -42,7 +54,7 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-# Add test source files
+# Collect all test source files
 file(GLOB TEST_SOURCES
     cli_app/tests/*.cpp
 )
@@ -50,17 +62,17 @@ file(GLOB TEST_SOURCES
 # Define the test executable
 add_executable(EnglishFormatterTests ${TEST_SOURCES})
 
-# Include directories for tests (if separate)
+# Include directories for tests (inherits from core library)
 target_include_directories(EnglishFormatterTests PRIVATE cli_app/include)
 
-# Link test executable against GTest, GMock, and the main project
+# Link test executable against GTest, GMock, and the core library
 target_link_libraries(EnglishFormatterTests 
     PRIVATE 
         GTest::gtest 
         GTest::gtest_main 
         GMock::gmock 
         GMock::gmock_main 
-        ${PROJECT_NAME}
+        core_lib
 )
 
 # Register the tests
