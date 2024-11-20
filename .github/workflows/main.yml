@@ -9,42 +9,31 @@ on:
       - main
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-    # Checkout the repository
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    # Set up dependencies
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y g++-12 cmake libcurl4-openssl-dev libfmt-dev
+        sudo apt-get install -y cmake g++ libcurl4-openssl-dev libgtest-dev
+        cd /usr/src/googletest
+        sudo cmake .
+        sudo make
+        sudo cp lib/*.a /usr/lib
 
-    # Configure compiler
-    - name: Set GCC 12 as default compiler
-      run: |
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 60
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 60
-        gcc --version
-        g++ --version
-
-    # Configure the project
     - name: Configure project
       run: |
         mkdir -p build
-        cmake -B build -S cli_app \
+        cmake -B build -S . \
           -DCMAKE_CXX_STANDARD=20 \
           -DCMAKE_CXX_STANDARD_REQUIRED=ON
 
-    # Build the project
     - name: Build project
       run: cmake --build build
 
-    # Run tests
     - name: Run tests
-      run: |
-        cd build
-        ctest --output-on-failure
+      run: ctest --test-dir build
