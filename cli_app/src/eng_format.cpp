@@ -1,4 +1,4 @@
-#include "Eng_Format.hpp"
+#include "eng_Format.hpp"
 
 // Parse the response from the API
 std::string eng_format::parse_response(const std::string& response) {
@@ -22,7 +22,7 @@ std::string eng_format::parse_response(const std::string& response) {
 }
 
 // Function to save content to a file
-static void eng_format::save_file(const std::string& fileName,
+void eng_format::save_file(const std::string& fileName,
                                   const std::string& content) {
   std::ofstream outFile(fileName);
   if (!outFile.is_open()) {
