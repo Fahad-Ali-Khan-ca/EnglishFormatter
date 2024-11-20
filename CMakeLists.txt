@@ -8,15 +8,15 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Add include directories for headers
-include_directories(include)
+include_directories(cli_app/include)
 
 # Specify source files
 set(SOURCES
-    src/cli.cpp
-    src/api_client.cpp
-    src/display.cpp
-    src/common.cpp
-    test/test.cpp
+    cli_app/src/cli.cpp
+    cli_app/src/api_client.cpp
+    cli_app/src/display.cpp
+    cli_app/src/common.cpp
+    cli_app/test/test.cpp
 )
 
 # Find required packages
