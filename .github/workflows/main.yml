@@ -31,7 +31,19 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y libcurl4-openssl-dev
+        sudo apt-get install -y \
+          cmake \
+          libcurl4-openssl-dev \
+          libgtest-dev \
+          zlib1g-dev \
+          libfmt-dev
+          
+    - name: Build GoogleTest
+      run: |
+        cd /usr/src/googletest
+        sudo cmake -DBUILD_SHARED_LIBS=ON .
+        sudo make
+          udo cp lib/*.a /usr/lib
 
     - name: Configure CMake with GCC 12
       run: |
