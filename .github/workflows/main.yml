@@ -23,17 +23,17 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y cmake g++ libcurl4-openssl-dev libgtest-dev
 
-      # Build GoogleTest
+      # Build GoogleTest in the home directory
       - name: Build GoogleTest
         run: |
-          mkdir -p /usr/src/gtest/build && cd /usr/src/gtest/build
-          cmake .. && make
+          mkdir -p $HOME/gtest/build && cd $HOME/gtest/build
+          cmake /usr/src/googletest && make
 
       # Configure and build the project
       - name: Configure CMake project
         run: |
           mkdir -p build
-          cmake -S . -B build
+          cmake -S . -B build -DCMAKE_PREFIX_PATH=$HOME/gtest/build
 
       - name: Build project
         run: |
