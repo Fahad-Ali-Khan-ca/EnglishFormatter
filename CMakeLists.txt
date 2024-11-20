@@ -16,7 +16,7 @@ set(SOURCES
     cli_app/src/api_client.cpp
     cli_app/src/display.cpp
     cli_app/src/common.cpp
-    cli_app/tests/test.cpp
+    cli_app/tests/tests.cpp
 )
 
 # Find required packages
