@@ -1,79 +1,59 @@
-cmake_minimum_required(VERSION 3.20)
-project(EnglishFormatter LANGUAGES CXX)
+name: CI
 
-# Set C++ standard to C++20
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
-# ------------------------
-# Core Library Configuration
-# ------------------------
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-# Collect all source files for the core library
-file(GLOB CORE_SOURCES
-    cli_app/src/*.cpp
-)
+    steps:
+    # 1. Checkout the repository code
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-# Define the core library
-add_library(core_lib STATIC ${CORE_SOURCES})
+    # 2. Install GCC-13 and set it as the default compiler
+    - name: Install GCC-13
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y software-properties-common
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+        sudo apt-get update
+        sudo apt-get install -y gcc-13 g++-13
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 13
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 13
+        gcc --version
+        g++ --version
 
-# Include directories for the core library
-target_include_directories(core_lib PUBLIC cli_app/include)
+    # 3. Install necessary dependencies
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          cmake \
+          libcurl4-openssl-dev \
+          zlib1g-dev \
+          libfmt-dev \
+          build-essential  # Ensures basic build tools are available
 
-# Find and link CURL and fmt libraries
-find_package(CURL REQUIRED)
-find_package(fmt REQUIRED)
-target_link_libraries(core_lib PUBLIC CURL::libcurl fmt::fmt)
+    # 4. Configure the CMake build
+    - name: Configure CMake with GCC-13
+      env:
+        CC: gcc-13
+        CXX: g++-13
+      run: |
+        mkdir -p build
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc-13 -DCMAKE_CXX_COMPILER=g++-13
 
-# ------------------------
-# Main Executable Configuration
-# ------------------------
+    # 5. Build the project
+    - name: Build project
+      run: cmake --build build -- -j$(nproc)
 
-# Define the main executable and link it against the core library
-add_executable(EnglishFormatter cli_app/src/main.cpp)  # Ensure you have a main.cpp
-target_link_libraries(EnglishFormatter PRIVATE core_lib)
-
-# ------------------------
-# GoogleTest and GoogleMock Configuration
-# ------------------------
-include(FetchContent)
-
-# Fetch GoogleTest (which includes GoogleMock)
-FetchContent_Declare(
-  googletest
-  URL https://github.com/google/googletest/archive/refs/tags/release-1.12.1.zip
-)
-
-# Prevent overriding the parent project's compiler/linker settings
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
-# Optionally, set to build GMock as well
-set(BUILD_GMOCK ON CACHE BOOL "" FORCE)
-
-FetchContent_MakeAvailable(googletest)
-
-enable_testing()
-
-# Collect all test source files
-file(GLOB TEST_SOURCES
-    cli_app/tests/*.cpp
-)
-
-# Define the test executable
-add_executable(EnglishFormatterTests ${TEST_SOURCES})
-
-# Include directories for tests (inherits from core library)
-target_include_directories(EnglishFormatterTests PRIVATE cli_app/include)
-
-# Link test executable against GTest, GMock, and the core library
-target_link_libraries(EnglishFormatterTests 
-    PRIVATE 
-        GTest::gtest 
-        GTest::gtest_main 
-        GMock::gmock 
-        GMock::gmock_main 
-        core_lib
-)
-
-# Register the tests
-add_test(NAME EnglishFormatterTests COMMAND EnglishFormatterTests)
+    # 6. Run tests
+    - name: Run tests
+      run: ctest --test-dir build --output-on-failure
