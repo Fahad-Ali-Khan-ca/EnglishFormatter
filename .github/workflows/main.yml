@@ -1,38 +1,40 @@
-name: CI Pipeline
+name: Build and Test EnglishFormatter
 
 on:
   push:
     branches:
       - main
   pull_request:
-    branches:
-      - main
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y libcurl4-openssl-dev libgtest-dev cmake
+      # Step 2: Install dependencies
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++ libcurl4-openssl-dev cmake libgtest-dev
+          # Build Google Test (it’s not prebuilt on Ubuntu)
+          cd /usr/src/googletest
+          sudo cmake .
+          sudo make
+          sudo cp *.a /usr/lib
+          
+      # Step 3: Configure and Build
+      - name: Configure and build
+        run: |
+          mkdir -p build
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+          cmake --build build
 
-    - name: Build Google Test
-      run: |
-        cd /usr/src/gtest
-        sudo cmake .
-        sudo make
-        sudo cp lib/*.a /usr/lib
-
-
-    - name: Build project
-      run: |
-        cmake -S . -B build
-        cmake --build build
-
-    - name: Run tests
-      run: ./build/tests
+      # Step 4: Run Tests
+      - name: Run tests
+        run: |
+          cd build
+          ctest --output-on-failure
