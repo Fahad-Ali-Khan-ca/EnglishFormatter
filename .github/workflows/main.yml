@@ -20,11 +20,19 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y software-properties-common
-        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
         sudo apt-get update
         sudo apt-get install -y gcc-12 g++-12
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 12
         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 12
+        gcc --version
+        g++ --version
+        
+    - name: Configure CMake with GCC 12
+      run: |
+        export CC=gcc-12
+        export CXX=g++-12
+        cmake -S . -B build -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
 
     - name: Install dependencies
       run: |
