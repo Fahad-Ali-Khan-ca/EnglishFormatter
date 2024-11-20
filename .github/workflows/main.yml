@@ -43,7 +43,7 @@ jobs:
         cd /usr/src/googletest
         sudo cmake -DBUILD_SHARED_LIBS=ON .
         sudo make
-          udo cp lib/*.a /usr/lib
+        sudo cp lib/*.a /usr/lib
 
     - name: Configure CMake with GCC 12
       run: |
