@@ -26,28 +26,24 @@ find_package(fmt REQUIRED)
 target_link_libraries(core_lib PUBLIC CURL::libcurl fmt::fmt)
 
 # ------------------------
-# Main Executable Configuration
-# ------------------------
-
-# Define the main executable and link it against the core library
-add_executable(EnglishFormatter cli_app/src/cli.cpp)  # Ensure you have a main.cpp
-target_link_libraries(EnglishFormatter PRIVATE core_lib)
-
-# ------------------------
 # GoogleTest and GoogleMock Configuration
 # ------------------------
 include(FetchContent)
+
+# Set CMake policy to handle CMP0135
+cmake_policy(SET CMP0135 NEW)
 
 # Fetch GoogleTest (which includes GoogleMock)
 FetchContent_Declare(
   googletest
   URL https://github.com/google/googletest/archive/refs/tags/release-1.12.1.zip
+  DOWNLOAD_EXTRACT_TIMESTAMP ON
 )
 
 # Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
-# Optionally, set to build GMock as well
+# Enable building GMock
 set(BUILD_GMOCK ON CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(googletest)
@@ -62,7 +58,7 @@ file(GLOB TEST_SOURCES
 # Define the test executable
 add_executable(EnglishFormatterTests ${TEST_SOURCES})
 
-# Include directories for tests (inherits from core library)
+# Include directories for tests
 target_include_directories(EnglishFormatterTests PRIVATE cli_app/include)
 
 # Link test executable against GTest, GMock, and the core library
