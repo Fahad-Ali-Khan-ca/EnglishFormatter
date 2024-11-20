@@ -1,37 +1,36 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
 
-# Project name and version
-project(EnglishFormatter VERSION 1.0 LANGUAGES CXX)
+# Set the project name
+project(EnglishFormatter LANGUAGES CXX)
 
 # Set C++ standard
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Add include directories for headers
+# Include directories for headers
 include_directories(cli_app/include)
 
-# Specify source files
-set(SOURCES
-    cli_app/src/cli.cpp
-    cli_app/src/api_client.cpp
-    cli_app/src/display.cpp
-    cli_app/src/common.cpp
-    cli_app/tests/tests.cpp
+# Add source files
+file(GLOB SOURCES
+    cli_app/src/*.cpp
 )
 
-# Find required packages
+# Add test files
+file(GLOB TEST_SOURCES
+    cli_app/tests/*.cpp
+)
+
+# Define the executable
+add_executable(${PROJECT_NAME} ${SOURCES} ${TEST_SOURCES})
+
+# Find and link CURL
 find_package(CURL REQUIRED)
-include_directories(${CURL_INCLUDE_DIRS})
-
-# Add Google Test framework
-enable_testing()
-
-# Add the executable
-add_executable(${PROJECT_NAME} ${SOURCES})
-
-# Link libraries
 target_link_libraries(${PROJECT_NAME} PRIVATE CURL::libcurl)
-target_link_libraries(${PROJECT_NAME} PRIVATE gtest gmock gtest_main)
 
-# Add test cases
+# Include Google Test if tests exist
+find_package(GTest REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest GTest::gtest_main)
+
+# Enable testing
+enable_testing()
 add_test(NAME EnglishFormatterTests COMMAND ${PROJECT_NAME})
