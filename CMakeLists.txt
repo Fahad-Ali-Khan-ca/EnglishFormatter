@@ -50,6 +50,18 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
+# ------------------------
+# Main Executable Configuration
+# ------------------------
+
+# Define the main executable and link it against the core library
+add_executable(EnglishFormatter cli_app/src/main.cpp)
+target_link_libraries(EnglishFormatter PRIVATE core_lib)
+
+# ------------------------
+# Test Executable Configuration
+# ------------------------
+
 # Collect all test source files
 file(GLOB TEST_SOURCES
     cli_app/tests/*.cpp
@@ -66,7 +78,6 @@ target_link_libraries(EnglishFormatterTests
     PRIVATE 
         GTest::gtest 
         GTest::gtest_main 
-        GMock::gmock 
         GMock::gmock_main 
         core_lib
 )
