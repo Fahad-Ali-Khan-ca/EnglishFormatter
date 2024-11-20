@@ -9,38 +9,42 @@ on:
       - main
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the code
-      - name: Checkout code
-        uses: actions/checkout@v3
+    # Checkout the repository
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      # Install dependencies
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y cmake g++ libcurl4-openssl-dev libgtest-dev
+    # Set up dependencies
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y g++-12 cmake libcurl4-openssl-dev libfmt-dev
 
-      # Build GoogleTest in the home directory
-      - name: Build GoogleTest
-        run: |
-          mkdir -p $HOME/gtest/build && cd $HOME/gtest/build
-          cmake /usr/src/googletest && make
+    # Configure compiler
+    - name: Set GCC 12 as default compiler
+      run: |
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 60
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 60
+        gcc --version
+        g++ --version
 
-      # Configure and build the project
-      - name: Configure CMake project
-        run: |
-          mkdir -p build
-          cmake -S . -B build -DCMAKE_PREFIX_PATH=$HOME/gtest/build
+    # Configure the project
+    - name: Configure project
+      run: |
+        mkdir -p build
+        cmake -B build -S cli_app \
+          -DCMAKE_CXX_STANDARD=20 \
+          -DCMAKE_CXX_STANDARD_REQUIRED=ON
 
-      - name: Build project
-        run: |
-          cmake --build build
+    # Build the project
+    - name: Build project
+      run: cmake --build build
 
-      # Run tests
-      - name: Run tests
-        run: |
-          cd build
-          ctest --output-on-failure
+    # Run tests
+    - name: Run tests
+      run: |
+        cd build
+        ctest --output-on-failure
