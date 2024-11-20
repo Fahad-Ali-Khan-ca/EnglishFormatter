@@ -1,7 +1,8 @@
 // display.cpp - Functions declarations for display class
 //
 // 19-Sep-24  F.Khan         Created.
-
+#include <termios.h>
+#include <unistd.h>  
 #include "display.hpp"
 
 void display::clearScreen() {
