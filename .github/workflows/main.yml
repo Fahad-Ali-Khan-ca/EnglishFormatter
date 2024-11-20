@@ -1,4 +1,4 @@
-name: Build and Test
+name: CI
 
 on:
   push:
@@ -9,13 +9,13 @@ on:
       - main
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
+    - name: Checkout code
       uses: actions/checkout@v3
-      
+
     - name: Upgrade GCC
       run: |
         sudo apt-get update
@@ -27,28 +27,17 @@ jobs:
         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 12
         gcc --version
         g++ --version
-        
-    - name: Configure CMake with GCC 12
-      run: |
-        export CC=gcc-12
-        export CXX=g++-12
-        cmake -S . -B build -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12
 
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y cmake g++ libcurl4-openssl-dev libgtest-dev
-        cd /usr/src/googletest
-        sudo cmake .
-        sudo make
-        sudo cp lib/*.a /usr/lib
+        sudo apt-get install -y libcurl4-openssl-dev
 
-    - name: Configure project
+    - name: Configure CMake with GCC 12
       run: |
-        mkdir -p build
-        cmake -B build -S . \
-          -DCMAKE_CXX_STANDARD=20 \
-          -DCMAKE_CXX_STANDARD_REQUIRED=ON
+        export CC=gcc-12
+        export CXX=g++-12
+        cmake -S . -B build -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12 -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu
 
     - name: Build project
       run: cmake --build build
