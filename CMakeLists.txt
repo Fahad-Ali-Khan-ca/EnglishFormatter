@@ -55,7 +55,7 @@ enable_testing()
 # ------------------------
 
 # Define the main executable and link it against the core library
-add_executable(EnglishFormatter cli_app/src/main.cpp)
+add_executable(EnglishFormatter cli_app/src/cli.cpp)
 target_link_libraries(EnglishFormatter PRIVATE core_lib)
 
 # ------------------------
