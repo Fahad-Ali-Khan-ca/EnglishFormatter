@@ -46,9 +46,10 @@ jobs:
           sudo cp lib/*.so /usr/lib
 
     - name: Configure CMake with GCC 12
+      env:
+        CC: gcc-12
+        CXX: g++-12
       run: |
-        export CC=gcc-12
-        export CXX=g++-12
         cmake -S . -B build -DCMAKE_CXX_COMPILER=g++-12 -DCMAKE_C_COMPILER=gcc-12 -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu
 
     - name: Build project
