@@ -3,7 +3,6 @@
 #include <gmock/gmock.h>
 #include "api_client.hpp"
 #include "common.hpp"
-#include "cli.cpp"
 #include "display.hpp"
 
 class MockApiClient : public api_client {
