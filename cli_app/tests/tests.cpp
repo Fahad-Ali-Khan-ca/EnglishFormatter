@@ -1,9 +1,11 @@
-// tests.cpp
+// cli_app/tests/tests.cpp
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include "api_client.hpp"
 #include "common.hpp"
 #include "display.hpp"
+#include "dotenv.h"
+#include <cstdlib> 
 
 class MockApiClient : public api_client {
 public:
@@ -19,9 +21,9 @@ TEST(MockApiClientTests, MockedApiResponse) {
     EXPECT_EQ(response, R"({"choices": [{"message": {"content": "Mock Response"}}]})");
 }
 
-// Mock the CURL and environment variable setup
 TEST(ApiClientTests, ThrowsOnMissingApiKey) {
-    unsetenv("API_KEY");
+    dotenv::init();
+    std::unsetenv("API_KEY");
     EXPECT_THROW(api_client client, std::runtime_error);
 }
 
@@ -53,7 +55,6 @@ TEST(ApiClientTests, WriteCallbackAppendsResponse) {
     EXPECT_EQ(responseData, "Test Data");
 }
 
-
 TEST(EngFormatTests, ThrowsOnEmptyResponse) {
     eng_format formatter;
     std::string response = "";
@@ -78,23 +79,6 @@ TEST(EngFormatTests, GetTokenInfoHandlesMissingFields) {
     std::string response = R"({"usage": {}})";
     EXPECT_EQ(formatter.get_token_info(response), "Token usage information not found in response.");
 }
-
-
-TEST(CliTests, ReturnsErrorOnUnrecognizedOption) {
-    const char* argv[] = {"tool_name", "--invalid"};
-    EXPECT_EQ(main(2, (char**)argv), 1); // Assuming 1 is error code
-}
-
-TEST(CliTests, HandlesHelpFlag) {
-    const char* argv[] = {"tool_name", "--help"};
-    EXPECT_EQ(main(2, (char**)argv), 0);
-}
-
-TEST(CliTests, HandlesVersionFlag) {
-    const char* argv[] = {"tool_name", "--version"};
-    EXPECT_EQ(main(2, (char**)argv), 0);
-}
-
 
 TEST(DisplayTests, HandlesMenuNavigation) {
     std::vector<std::string> menuItems = {"Option 1", "Option 2", "Exit"};

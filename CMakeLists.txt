@@ -14,7 +14,7 @@ file(GLOB CORE_SOURCES
     cli_app/src/*.cpp
 )
 
-# Exclude cli.cpp from CORE_SOURCES
+# Exclude cli.cpp from CORE_SOURCES to prevent multiple main definitions
 list(FILTER CORE_SOURCES EXCLUDE REGEX "cli\\.cpp$")
 
 # Define the core library
