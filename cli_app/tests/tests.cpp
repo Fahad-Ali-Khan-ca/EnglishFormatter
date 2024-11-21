@@ -10,17 +10,19 @@
 
 class MockApiClient : public api_client {
 public:
-    MOCK_METHOD(std::string, make_api_call, (const std::string& prompt), (override));
+    MOCK_METHOD(std::string, make_api_call, (const std::string& prompt), (const, override));
 };
 
 TEST(MockApiClientTests, MockedApiResponse) {
     MockApiClient mockClient;
     EXPECT_CALL(mockClient, make_api_call)
         .WillOnce(::testing::Return(R"({"choices": [{"message": {"content": "Mock Response"}}]})"));
-    
+
     std::string response = mockClient.make_api_call("Test Prompt");
     EXPECT_EQ(response, R"({"choices": [{"message": {"content": "Mock Response"}}]})");
 }
+
+
 
 TEST(ApiClientTests, ThrowsOnMissingApiKey) {
     dotenv::init();
