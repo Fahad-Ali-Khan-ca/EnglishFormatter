@@ -5,6 +5,8 @@
 #include "common.hpp"
 #include "display.hpp"
 #include "dotenv.h"
+#include <cstdlib>
+
 
 class MockApiClient : public api_client {
 public:
@@ -22,7 +24,7 @@ TEST(MockApiClientTests, MockedApiResponse) {
 
 TEST(ApiClientTests, ThrowsOnMissingApiKey) {
     dotenv::init();
-    std::unsetenv("API_KEY");
+    unsetenv("API_KEY");
     EXPECT_THROW(api_client client, std::runtime_error);
 }
 
