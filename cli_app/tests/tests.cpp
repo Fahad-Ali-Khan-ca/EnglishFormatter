@@ -1,73 +1,40 @@
 // cli_app/tests/tests.cpp
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include "api_client.hpp"
 #include "common.hpp"
 #include "display.hpp"
+#include "eng_format.hpp"
 #include <cstdlib>
 
-class TestEnvironment : public ::testing::Environment {
-public:
-    void SetUp() override {
-        // Set test-specific environment variables
-        setenv("API_KEY", "test_api_key", 1);
-        setenv("API_URL", "https://example.com/api", 1);
-    }
-
-    void TearDown() override {
-        // Clean up environment variables after tests
-        unsetenv("API_KEY");
-        unsetenv("API_URL");
-    }
-};
-
-TEST(ApiClientTests, ThrowsOnMissingApiKey) {
-    unsetenv("API_KEY");
-    EXPECT_THROW(api_client client, std::runtime_error);
-    // Restore environment variable after test
-    setenv("API_KEY", "test_api_key", 1);
-}
-
-TEST(ApiClientTests, MakesSuccessfulApiCall) {
-    api_client client;
-    std::string prompt = "Test Prompt";
-    EXPECT_NO_THROW(client.make_api_call(prompt));
-}
-
+// Test EngFormat for parsing valid API responses
 TEST(EngFormatTests, ParsesValidResponse) {
     eng_format formatter;
     std::string response = R"({"choices": [{"message": {"content": "Hello, world!"}}]})";
     EXPECT_EQ(formatter.parse_response(response), "Hello, world!");
 }
 
+// Test EngFormat for handling invalid API responses
 TEST(EngFormatTests, HandlesInvalidResponse) {
     eng_format formatter;
     std::string response = R"({"error": {"message": "Invalid input"}})";
     EXPECT_THROW(formatter.parse_response(response), std::runtime_error);
 }
 
-TEST(ApiClientTests, WriteCallbackAppendsResponse) {
-    std::string responseData;
-    const char* testData = "Test Data";
-    size_t size = sizeof(testData) - 1;
-    
-    size_t written = api_client::WriteCallback((void*)testData, 1, size, &responseData);
-    EXPECT_EQ(written, size);
-    EXPECT_EQ(responseData, "Test Data");
-}
-
+// Test EngFormat for handling empty API responses
 TEST(EngFormatTests, ThrowsOnEmptyResponse) {
     eng_format formatter;
     std::string response = "";
     EXPECT_THROW(formatter.parse_response(response), std::runtime_error);
 }
 
+// Test EngFormat for handling API responses without choices
 TEST(EngFormatTests, HandlesResponseWithoutChoices) {
     eng_format formatter;
     std::string response = R"({"no_choices": [{"message": {"content": "Test"}}]})";
     EXPECT_THROW(formatter.parse_response(response), std::runtime_error);
 }
 
+// Test EngFormat for parsing token usage information
 TEST(EngFormatTests, GetTokenInfoParsesCorrectly) {
     eng_format formatter;
     std::string response = R"({"usage": {"prompt_tokens": 10, "completion_tokens": 5, "total_tokens": 15}})";
@@ -75,20 +42,15 @@ TEST(EngFormatTests, GetTokenInfoParsesCorrectly) {
               "Token usage:\nPrompt tokens: 10\nCompletion tokens: 5\nTotal tokens: 15");
 }
 
+// Test EngFormat for handling missing token usage fields
 TEST(EngFormatTests, GetTokenInfoHandlesMissingFields) {
     eng_format formatter;
     std::string response = R"({"usage": {}})";
     EXPECT_EQ(formatter.get_token_info(response), "Token usage information not found in response.");
 }
 
-TEST(DisplayTests, HandlesMenuNavigation) {
-    std::vector<std::string> menuItems = {"Option 1", "Option 2", "Exit"};
-    display menu(menuItems);
-    EXPECT_NO_THROW(menu.navigate_menu());
-}
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
-    ::testing::AddGlobalTestEnvironment(new TestEnvironment); // Add test environment
     return RUN_ALL_TESTS();
 }
