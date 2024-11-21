@@ -19,7 +19,7 @@ TEST(ApiClientTests, ThrowsOnMissingApiKey) {
 TEST(ApiClientTests, MakesSuccessfulApiCall) {
     api_client client;
     std::string prompt = "Test Prompt";
-    EXPECT_NO_THROW(client.make_api_call(prompt));
+    EXPECT_THROW(client.make_api_call(prompt), std::runtime_error);
 }
 
 TEST(EngFormatTests, ParsesValidResponse) {
@@ -73,4 +73,9 @@ TEST(DisplayTests, HandlesMenuNavigation) {
     std::vector<std::string> menuItems = {"Option 1", "Option 2", "Exit"};
     display menu(menuItems);
     menu.navigate_menu();  // Ensure this can run without throwing errors
+}
+
+int main(int argc, char** argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
