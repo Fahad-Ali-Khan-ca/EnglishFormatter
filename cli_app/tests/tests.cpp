@@ -46,6 +46,20 @@ TEST(EngFormatTests, HandlesResponseWithoutChoices) {
     std::string response = R"({"no_choices": [{"message": {"content": "Test"}}]})";
     EXPECT_THROW(formatter.parse_response(response), std::runtime_error);
 }
+TEST(EngFormatTests, SaveFileThrowsOnInvalidFile) {
+    // Set dummy environment variables for testing
+    setenv("API_KEY", "dummy_key", 1);
+    setenv("API_URL", "https://dummy.url", 1);
+
+    eng_format formatter;
+
+    // Use an invalid file path (e.g., a directory) to force an error
+    std::string invalidFilePath = "/invalid_path/test_output.txt";
+    std::string testContent = "This content should fail to save.";
+
+    // Ensure that the save_file method throws an exception for the invalid path
+    EXPECT_THROW(formatter.save_file(invalidFilePath, testContent), std::runtime_error);
+}
 
 // TEST(EngFormatTests, GetTokenInfoParsesCorrectly) {
 //     // Set dummy environment variables for testing
