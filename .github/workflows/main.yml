@@ -20,8 +20,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential cmake curl libcurl4-openssl-dev libfmt-dev
-          sudo apt-get install -y g++-13
-          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 20
+          
           # Download and build GoogleTest/GoogleMock
           git clone https://github.com/google/googletest.git /tmp/googletest
           cd /tmp/googletest
@@ -30,6 +29,18 @@ jobs:
           cmake ..
           make
           sudo make install
+          
+      - name: Install GCC 13+
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y software-properties-common
+          sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+          sudo apt-get update
+          sudo apt-get install -y g++-13 gcc-13
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 20
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 20
+          gcc --version
+          g++ --version
 
       - name: Configure CMake
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
