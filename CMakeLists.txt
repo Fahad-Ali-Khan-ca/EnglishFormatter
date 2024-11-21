@@ -33,9 +33,6 @@ target_link_libraries(core_lib PUBLIC CURL::libcurl fmt::fmt)
 # ------------------------
 include(FetchContent)
 
-# Set CMake policy to handle CMP0135
-cmake_policy(SET CMP0135 NEW)
-
 # Fetch GoogleTest (which includes GoogleMock)
 FetchContent_Declare(
   googletest
@@ -46,8 +43,9 @@ FetchContent_Declare(
 # Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
-# Enable building GMock
+# Enable building GMock and GTest
 set(BUILD_GMOCK ON CACHE BOOL "" FORCE)
+set(BUILD_GTEST ON CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(googletest)
 
@@ -76,11 +74,11 @@ add_executable(EnglishFormatterTests ${TEST_SOURCES})
 # Include directories for tests
 target_include_directories(EnglishFormatterTests PRIVATE cli_app/include)
 
-# Link test executable against GTest, GMock, and the core library
+# Link test executable against GMock, GTest, and the core library
 target_link_libraries(EnglishFormatterTests 
     PRIVATE 
-        GTest::gtest 
-        GMock::gmock 
+        gmock 
+        gtest 
         core_lib
 )
 

@@ -5,7 +5,6 @@
 #include "common.hpp"
 #include "display.hpp"
 #include "dotenv.h"
-#include <cstdlib> 
 
 class MockApiClient : public api_client {
 public:
