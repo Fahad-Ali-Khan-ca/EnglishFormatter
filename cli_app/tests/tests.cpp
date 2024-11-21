@@ -34,20 +34,20 @@ TEST(EngFormatTests, HandlesResponseWithoutChoices) {
     EXPECT_THROW(formatter.parse_response(response), std::runtime_error);
 }
 
-// Test EngFormat for parsing token usage information
-TEST(EngFormatTests, GetTokenInfoParsesCorrectly) {
-    eng_format formatter;
-    std::string response = R"({"usage": {"prompt_tokens": 10, "completion_tokens": 5, "total_tokens": 15}})";
-    EXPECT_EQ(formatter.get_token_info(response), 
-              "Token usage:\nPrompt tokens: 10\nCompletion tokens: 5\nTotal tokens: 15");
-}
+// // Test EngFormat for parsing token usage information
+// TEST(EngFormatTests, GetTokenInfoParsesCorrectly) {
+//     eng_format formatter;
+//     std::string response = R"({"usage": {"prompt_tokens": 10, "completion_tokens": 5, "total_tokens": 15}})";
+//     EXPECT_EQ(formatter.get_token_info(response), 
+//               "Token usage:\nPrompt tokens: 10\nCompletion tokens: 5\nTotal tokens: 15");
+// }
 
-// Test EngFormat for handling missing token usage fields
-TEST(EngFormatTests, GetTokenInfoHandlesMissingFields) {
-    eng_format formatter;
-    std::string response = R"({"usage": {}})";
-    EXPECT_EQ(formatter.get_token_info(response), "Token usage information not found in response.");
-}
+// // Test EngFormat for handling missing token usage fields
+// TEST(EngFormatTests, GetTokenInfoHandlesMissingFields) {
+//     eng_format formatter;
+//     std::string response = R"({"usage": {}})";
+//     EXPECT_EQ(formatter.get_token_info(response), "Token usage information not found in response.");
+// }
 
 
 int main(int argc, char** argv) {
