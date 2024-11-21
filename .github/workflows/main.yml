@@ -29,7 +29,7 @@ jobs:
           cmake ..
           make
           sudo make install
-          
+
       - name: Install GCC 13+
         run: |
           sudo apt-get update
@@ -49,4 +49,5 @@ jobs:
         run: cmake --build build --config Release
 
       - name: Run tests
-        run: ctest --test-dir build
+        run: ctest --test-dir build --output-on-failure
+
