@@ -1,7 +1,8 @@
-
 # EnglishFormatter
 
-EnglishFormatter is a command-line tool designed to help users format, summarize, or paraphrase text documents using advanced language models. It provides an interactive menu-driven interface and supports customization through command-line arguments. Here is the link to some of the commands run in vscode https://youtu.be/6LvhQ6r_KDE 
+EnglishFormatter is a command-line tool designed to help users format, summarize, or paraphrase text documents using advanced language models. It provides an interactive menu-driven interface and supports customization through command-line arguments.
+
+[Here's a link to a demo of the tool in action using VSCode](https://youtu.be/6LvhQ6r_KDE).
 
 ## Table of Contents
 
@@ -16,6 +17,13 @@ EnglishFormatter is a command-line tool designed to help users format, summarize
 - [Development](#development)
 - [Contributing](#contributing)
 - [License](#license)
+- [Contact](#contact)
+- [Acknowledgments](#acknowledgments)
+- [Notes](#notes)
+- [FAQ](#frequently-asked-questions-faq)
+- [Detailed Class Explanations](#detailed-class-explanations)
+- [Extending the Tool](#extending-the-tool)
+- [Support](#support)
 
 ---
 
@@ -33,72 +41,94 @@ EnglishFormatter is a command-line tool designed to help users format, summarize
 
 ## Prerequisites
 
-- **C++17 or higher**: The project requires a compiler that supports C++17.
-- **libcurl**: For making HTTP requests to the API.
-- **nlohmann/json**: For JSON parsing and serialization.
-- **dotenv-cpp**: To manage environment variables from a `.env` file.
+- **CMake 3.20 or higher**: For building the project.
+- **C++20 Compiler**: A compiler that supports C++20 (e.g., GCC 10+, Clang 10+, MSVC 2019+).
+- **Vcpkg**: For dependency management.
 - **An API Key**: You'll need an API key from the language model provider (e.g., OpenAI).
 
 ---
 
 ## Installation
 
-1. **Clone the Repository**
+### 1. Install Vcpkg
 
-   ```bash
-   git clone https://github.com/yourusername/EnglishFormatter.git
-   cd EnglishFormatter
-   ```
+Vcpkg is a package manager for C++ libraries.
 
-2. **Install Dependencies**
+- **Clone Vcpkg**
 
-   - **libcurl**
+  ```bash
+  git clone https://github.com/microsoft/vcpkg.git
+  ```
 
-     - **Windows**: Download the pre-built binaries from the [official website](https://curl.se/windows/).
-     - **Unix/Linux**:
+- **Bootstrap Vcpkg**
 
-       ```bash
-       sudo apt-get install libcurl4-openssl-dev
-       ```
+  ```bash
+  cd vcpkg
+  # On Unix/Linux/macOS
+  ./bootstrap-vcpkg.sh
+  # On Windows (PowerShell)
+  .\bootstrap-vcpkg.bat
+  ```
 
-   - **nlohmann/json**
+### 2. Clone the Repository
 
-     - Download the single-header `json.hpp` file from the [GitHub repository](https://github.com/nlohmann/json/releases).
+```bash
+git clone https://github.com/yourusername/EnglishFormatter.git
+cd EnglishFormatter
+```
 
-   - **dotenv-cpp**
+### 3. Set Up the `.env` File
 
-     - Clone the repository:
+Create a `.env` file in the project's root directory:
 
-       ```bash
-       git clone https://github.com/motdotla/dotenv-cpp.git
-       ```
+```
+API_KEY=your_api_key_here
+```
 
-     - Include the `dotenv.h` and `dotenv.cpp` in your project.
+Replace `your_api_key_here` with your actual API key.
 
-3. **Set Up the .env File**
+### 4. Build the Project
 
-   Create a `.env` file in the project's root directory:
+#### Using CMake and Vcpkg
 
-   ```
-   API_KEY=your_api_key_here
-   ```
+- **Create a Build Directory**
 
-   Replace `your_api_key_here` with your actual API key.
+  ```bash
+  mkdir build
+  cd build
+  ```
 
-4. **Build the Project**
+- **Configure the Project with CMake**
 
-   - **Using g++**
+  ```bash
+  cmake .. -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
+  ```
 
-     ```bash
-     g++ -std=c++17 -o EnglishFormatter main.cpp eng_format.cpp display.cpp dotenv.cpp -lcurl -pthread
-     ```
+- **Build the Project**
 
-   - **Using Visual Studio**
+  ```bash
+  cmake --build .
+  ```
 
-     - Open the solution file or create a new project.
-     - Add all source files to the project.
-     - Link against `libcurl` and ensure all dependencies are included.
-     - Build the project.
+**Note**: On Windows with Visual Studio, you may need to specify the configuration:
+
+```bash
+cmake --build . --config Release
+```
+
+### 5. Run the Application
+
+- **Unix/Linux/macOS**
+
+  ```bash
+  ./EnglishFormatter
+  ```
+
+- **Windows**
+
+  ```bash
+  .\EnglishFormatter.exe
+  ```
 
 ---
 
@@ -110,7 +140,7 @@ EnglishFormatter is a command-line tool designed to help users format, summarize
 
 - **Default Model**
 
-  The default language model is `llama3-8b-8192`. You can change this using the `--model` command-line option.
+  The default language model is `gpt-3.5-turbo`. You can change this using the `--model` command-line option.
 
 - **Output Suffix**
 
@@ -128,7 +158,7 @@ EnglishFormatter [options]
 Options:
   -h, --help            Show this help message and exit
   -v, --version         Show the tool's version and exit
-  -m, --model MODEL     Specify the language model to use (default: llama3-8b-8192)
+  -m, --model MODEL     Specify the language model to use (default: gpt-3.5-turbo)
   -o, --output SUFFIX   Specify the output file suffix (default: _modified)
   -t, --token-usage     Show token usage and exit
 ```
@@ -144,7 +174,7 @@ Options:
 Run the tool without any arguments to start the interactive menu:
 
 ```bash
-./cli_app.exe
+./EnglishFormatter
 ```
 
 #### Menu Options
@@ -186,7 +216,7 @@ Run the tool without any arguments to start the interactive menu:
 ### Summarizing a Document
 
 ```bash
-./cli_app.exe
+./EnglishFormatter
 ```
 
 - **Select**: Summarize document
@@ -199,7 +229,7 @@ Run the tool without any arguments to start the interactive menu:
 ### Changing the Language Model
 
 ```bash
-./cli_app.exe --model gpt-4
+./EnglishFormatter --model gpt-4
 ```
 
 - **Select**: Paraphrase document
@@ -215,18 +245,51 @@ Run the tool without any arguments to start the interactive menu:
 
 ### Project Structure
 
-- **main.cpp**: Entry point of the application.
-- **eng_format.hpp/cpp**: Contains the `eng_format` class responsible for processing files and making API calls.
-- **display.hpp/cpp**: Contains the `display` class for the interactive menu.
-- **dotenv.h/cpp**: Manages environment variables.
-- **common.hpp**: Common includes and declarations.
+- **cli_app/**
+
+  - **src/**: Source code files.
+    - `cli.cpp`: Entry point of the application.
+    - `eng_format.cpp`: Contains the `eng_format` class responsible for processing files and making API calls.
+    - `display.cpp`: Contains the `display` class for the interactive menu.
+  - **include/**: Header files.
+    - `eng_format.hpp`
+    - `display.hpp`
+    - `common.hpp`: Common includes and declarations.
+
+- **vcpkg.json**: Manifest file for Vcpkg dependencies.
+
 - **.env**: Contains environment variables like `API_KEY`.
-  
-For development and contribution guidelines, refer to [CONTRIBUTING.md](CONTRIBUTING.md).
+
+### Dependencies Managed by Vcpkg
+
+- **curl**: For making HTTP requests.
+- **fmt**: For formatting strings.
+- **nlohmann-json**: For JSON parsing.
+- **dotenv-cpp**: For environment variable management.
+- **GoogleTest**: For unit testing.
+
+### Building the Project
+
+Follow the instructions in the [Installation](#installation) section.
+
+### Running Tests
+
+After building the project, you can run the tests using:
+
+```bash
+ctest
+```
 
 ---
 
 ## Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. **Fork the repository**.
+2. **Create a new branch** for your feature or bug fix.
+3. **Commit your changes** with clear and descriptive messages.
+4. **Push to your fork** and submit a **Pull Request**.
 
 For development and contribution guidelines, refer to [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -240,7 +303,7 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Contact
 
-For any questions or suggestions, please open an issue or contact the maintainer.
+For any questions or suggestions, please open an issue on the GitHub repository or contact the maintainer.
 
 ---
 
@@ -249,6 +312,8 @@ For any questions or suggestions, please open an issue or contact the maintainer
 - **libcurl**: For easy HTTP requests.
 - **nlohmann/json**: For JSON parsing.
 - **dotenv-cpp**: For environment variable management.
+- **fmt**: For formatting strings.
+- **GoogleTest**: For unit testing.
 - **OpenAI**: For providing advanced language models.
 
 ---
@@ -302,7 +367,7 @@ For any questions or suggestions, please open an issue or contact the maintainer
 ## Extending the Tool
 
 - **Adding New Actions**:
-  1. Update the `menuItems` vector in `main.cpp` with the new action.
+  1. Update the `menuItems` vector in `cli.cpp` with the new action.
   2. Implement a new method in `eng_format` to handle the action.
   3. Update the `process_files()` method to include the new action.
 
